@@ -6,7 +6,7 @@ import noscope
 from noscope import np_utils
 
 def to_test_train(avg_fname, all_frames, all_counts, train_ratio=0.6):
-    print all_frames.shape
+    print (all_frames.shape)
     assert len(all_frames) == len(all_counts), 'Frame length should equal counts length'
 
     nb_classes = all_counts.max() + 1
@@ -22,8 +22,8 @@ def to_test_train(avg_fname, all_frames, all_counts, train_ratio=0.6):
     pos_inds = pos_inds[0, 0 : N/2]
     neg_inds = np.random.permutation(np.where(all_counts.ravel() == 1))
     neg_inds = neg_inds[0, 0 : N/2]
-    print pos_inds.shape
-    print neg_inds.shape
+    print (pos_inds.shape)
+    print (neg_inds.shape)
     p = np.concatenate([pos_inds, neg_inds])
     np.random.shuffle(p)'''
 
@@ -54,33 +54,43 @@ def get_data(csv_fname, video_fname, avg_fname,
     def print_class_numbers(Y, nb_classes):
         classes = np_utils.probas_to_classes(Y)
         for i in xrange(nb_classes):
-            print 'class %d: %d' % (i, np.sum(classes == i))
+            print ('class %d: %d' % (i, np.sum(classes == i)))
 
-    print '\tParsing %s, extracting %s' % (csv_fname, str(OBJECTS))
+    print ('\tParsing %s, extracting %s' % (csv_fname, str(OBJECTS)))
     all_counts = noscope.DataUtils.get_binary(csv_fname, limit=num_frames, OBJECTS=OBJECTS, start=start_frame)
-    print '\tRetrieving all frames from %s' % video_fname
+    print ('\tRetrieving all frames from %s' % video_fname)
     all_frames = noscope.VideoUtils.get_all_frames(
             len(all_counts), video_fname, scale=resol, start=start_frame)
-    print '\tSplitting data into training and test sets'
+    print ('\tSplitting data into training and test sets')
     X_train, X_test, Y_train, Y_test = to_test_train(avg_fname, all_frames, all_counts)
 
     nb_classes = all_counts.max() + 1
-    print '(train) positive examples: %d, total examples: %d' % \
+    print ('(train) positive examples: %d, total examples: %d' % \
         (np.count_nonzero(np_utils.probas_to_classes(Y_train)),
-         len(Y_train))
+         len(Y_train)))
     print_class_numbers(Y_train, nb_classes)
-    print '(test) positive examples: %d, total examples: %d' % \
+    print ('(test) positive examples: %d, total examples: %d' % \
         (np.count_nonzero(np_utils.probas_to_classes(Y_test)),
-         len(Y_test))
+         len(Y_test)))
     print_class_numbers(Y_test, nb_classes)
 
-    print 'shape of image: ' + str(all_frames[0].shape)
-    print 'number of classes: %d' % (nb_classes)
+    print ('shape of image: ' + str(all_frames[0].shape))
+    print ('number of classes: %d' % (nb_classes))
 
     data = (X_train, Y_train, X_test, Y_test)
     return data, nb_classes
 
 def main():
+  # DO NOT USE RELATIVE PATHS
+    CODE_DIR="/content/"
+    DATA_DIR="/content/drive/MyDrive/AI_Lab/data/"
+    # Move this down to run jackson-town-square
+    VIDEO_NAME="jackson-town-square"
+    OBJECT="car"
+    NUM_FRAMES=918000
+    START_FRAME=0
+    GPU_NUM="0"
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--csv_in', required=True, help='CSV input filename')
     parser.add_argument('--video_in', required=True, help='Video input filename')
@@ -90,6 +100,14 @@ def main():
     parser.add_argument('--avg_fname', required=True)
     parser.add_argument('--num_frames', type=int, help='Number of frames')
     parser.add_argument('--start_frame', type=int)
+    parser.parse_args(['--avg_fname',VIDEO_NAME+'.npy', \
+    '--csv_in', DATA_DIR+VIDEO_NAME+'.csv', \
+    '--video_in', DATA_DIR+'/'+VIDEO_NAME+'.mp4', \
+    '--output_dir', 'content/noscope/results/cnn-models/', \
+    '--base_name', VIDEO_NAME, \
+    '--objects', OBJECT, \
+    '--num_frames', NUM_FRAMES, \
+    '--start_frame', START_FRAME])
     args = parser.parse_args()
 
     def check_args(args):
@@ -101,7 +119,7 @@ def main():
     # we're only focusing on the binary task
     assert len(objects) == 1
 
-    print 'Preparing data....'
+    print ('Preparing data....')
     data, nb_classes = get_data(
             args.csv_in, args.video_in, args.avg_fname,
             num_frames=args.num_frames,
