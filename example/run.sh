@@ -1,6 +1,6 @@
 # DO NOT USE RELATIVE PATHS
-CODE_DIR="/home/daniel_d_kang/code/"
-DATA_DIR="/home/daniel_d_kang/data/"
+CODE_DIR="/content/"
+DATA_DIR="/content/drive/MyDrive/AI_Lab/data/"
 
 # Move this down to run jackson-town-square
 VIDEO_NAME="jackson-town-square"
@@ -10,11 +10,11 @@ START_FRAME="0"
 GPU_NUM="0"
 
 
-VIDEO_NAME="coral-reef-long"
-OBJECT="person"
-NUM_FRAMES="1188000"
-START_FRAME="648000"
-GPU_NUM="0"
+# VIDEO_NAME="coral-reef-long"
+# OBJECT="person"
+# NUM_FRAMES="1188000"
+# START_FRAME="648000"
+# GPU_NUM="0"
 
 
 
@@ -23,8 +23,8 @@ GPU_NUM="0"
 export CUDA_VISIBLE_DEVICES="$GPU_NUM"
 python $CODE_DIR/noscope/exp/shuffled_small_cnn.py \
   --avg_fname ${VIDEO_NAME}.npy \
-  --csv_in $DATA_DIR/csv/${VIDEO_NAME}.csv \
-  --video_in $DATA_DIR/videos/${VIDEO_NAME}.mp4 \
+  --csv_in $DATA_DIR/${VIDEO_NAME}.csv \
+  --video_in $DATA_DIR/${VIDEO_NAME}.mp4 \
   --output_dir $DATA_DIR/cnn-models/ \
   --base_name ${VIDEO_NAME} \
   --objects $OBJECT \
